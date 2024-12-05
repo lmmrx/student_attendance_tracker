@@ -8,20 +8,61 @@ exports.login = async(req, res) => {
     const secret = process.env.secret_key;
 
     try {
-        const user = await AttendanceManager.FindOne({email});
+        const user = await AttendanceManager.findOne({email});
         
         if(!user) {
-            return res.status(404).json('Invalid username.');
+            return res.status(404).send('Invalid username.');
         }
 
         //use bcrypt to verify the password
         const result = await bcrypt.compare(password, user.password);
 
+        if(!result) {
+            res.send(404).send('Passowrd does not match our records.');
+            return;
+        }
+
         //generate the JWT
         const token = jwt.sign({ id: user._id.toString()}, secret, {expiresIn: '5m'});
 
+        //create a cookie and place the JWT inside of it
+        res.cookie('jwt', token, { maxAge: 5 * 60 * 1000, httpOnly: true});
+
     } catch (error) {
+        return res.status(500).send('Internal Server Error');
+    }
+
+}
+
+exports.register = async (req, res) => {
+    
+    const { email, password, confrimPassword} = req.body;
+
+    try {
         
+        const existingUser = AttendanceManager.findOne(email);
+
+        if (existingUser) {
+            res.status(400).send('Email already exist.');
+        }
+
+        if(password !== confrimPassword) {
+            res.status(400).send('Password do not match.');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+        
+        const newUser = AttendanceManager({
+            email,
+            password: hashedPassword
+        });
+
+        newUser.save();
+        
+        res.redirect('/login');
+            
+    } catch (error) {
+        return res.status(500).send('Internal Server Error');
     }
 
 }

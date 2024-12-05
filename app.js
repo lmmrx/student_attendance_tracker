@@ -8,10 +8,14 @@ const mongoose = require('mongoose');
 const YAML = require('yamljs');
 const swaggerUI = require('swagger-ui-express');
 const authRoutes = require('./routes/authRoutes.js');
+const cookieParser = require('cookie-parser');
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
+app.use(express.static('public'));
+app.use(cookieParser());
+app.use(express.urlencoded({exntender: true}));
 app.use(express.static('public'));
 app.use(authRoutes);
 

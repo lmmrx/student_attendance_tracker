@@ -12,10 +12,11 @@ const attendanceManagerSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    role,
+    role: {
         type: String,
         default: 'Attendance Manager',
         enum: ['Attendance Manager','Student'],
+    }
 });
 
 const AttendanceManager = mongoose.model('AttendanceManager', attendanceManagerSchema);
