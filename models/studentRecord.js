@@ -7,15 +7,16 @@ const attendanceSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        required: true,
         enum: ['present', 'absent'],
+        required: true,
     }
 });
 
-const studentRecordSchema = mongooge.Schema({
+const studentRecordSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
+        unique: true,
     },
     email: {
         type: String,
@@ -31,4 +32,3 @@ const studentRecordSchema = mongooge.Schema({
 const StudentRecord = mongoose.model('StudentRecord', studentRecordSchema);
 
 module.exports = StudentRecord;
-
